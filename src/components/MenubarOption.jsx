@@ -6,6 +6,7 @@ import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { useUserLoginData } from "../hooks/useUserLoginData";
 import { useGetPlayListsofUser } from "../hooks/useGetPlayListsofUser";
+import { useGetPlayListFolderofUser } from "../hooks/useGetPlayListFolderofUser";
 import AddToast from "./AddToast";
 import { put, post } from "../HttpService/http_service";
 import { useParams } from "react-router-dom";
@@ -45,6 +46,13 @@ function MenubarOption({ songid }) {
     userId,
     isSignedIn
   );
+  // to get folder of a user
+  const {
+    playListFolders,
+    playListFoldersLength,
+    setPlayListFoldersLength,
+    setReloadFolder,
+  } = useGetPlayListFolderofUser(userId, isSignedIn);
   // to open small screeen playlist
   const handlePlaylistOpen = () => {
     setOpenPlayList(true);
@@ -70,7 +78,7 @@ function MenubarOption({ songid }) {
       } else if (res.message === messageStatus.ADDED) {
         setOpen(true);
         setToastmessage(`Added to '${playlistname}'`);
-        handlePlaylistClose()
+        handlePlaylistClose();
       }
     } catch (error) {
       console.log("failed to add to the playlist");
@@ -132,7 +140,7 @@ function MenubarOption({ songid }) {
         createPlaylist={createPlaylist}
         addToPlayList={addToPlayList}
       />
-      
+
       <AddToast open={open} setOpen={setOpen} name={toastmessage} />
       <Menubar.Root className="flex">
         <Menubar.Menu>
@@ -175,7 +183,7 @@ function MenubarOption({ songid }) {
                 <Menubar.Portal>
                   <Menubar.SubContent
                     className="hidden sm:block z-10 bg-gray-800 text-slate-50 min-w-[220px] rounded-md p-1 drop-shadow-lg"
-                    alignOffset={-1}
+                    alignOffset={5}
                     sideOffset={0}
                   >
                     <Menubar.Item
@@ -195,28 +203,33 @@ function MenubarOption({ songid }) {
                       Create New Playlist
                     </Menubar.Item>
                     <div className="max-h-[400px] overflow-y-scroll scrollbar-none">
-                    {isLoading
-                      ? loadingloop.map((data, index) => {
-                          return <SmallAddtoPlayListbuttonLoading key={index} />;
-                        })
-                      : ""}
-                    {/* playLists */}
-                    {playLists.map((playlist, index) => {
-                      // we don't need the current playlist we are at.
-                      if (playlist._id !== id) {
-                        return (
-                          <Menubar.Item
-                            className="outline-none px-3 py-2 my-1 rounded-md hover:bg-gray-700 cursor-default"
-                            key={index}
-                            onClick={() =>
-                              addToPlayList(playlist._id, playlist.playListName)
-                            }
-                          >
-                            {playlist.playListName}
-                          </Menubar.Item>
-                        );
-                      }
-                    })}
+                      {isLoading
+                        ? loadingloop.map((data, index) => {
+                            return (
+                              <SmallAddtoPlayListbuttonLoading key={index} />
+                            );
+                          })
+                        : ""}
+                      {/* playLists */}
+                      {playLists.map((playlist, index) => {
+                        // we don't need the current playlist we are at.
+                        if (playlist._id !== id) {
+                          return (
+                            <Menubar.Item
+                              className="outline-none px-3 py-2 my-1 rounded-md hover:bg-gray-700 cursor-default"
+                              key={index}
+                              onClick={() =>
+                                addToPlayList(
+                                  playlist._id,
+                                  playlist.playListName
+                                )
+                              }
+                            >
+                              {playlist.playListName}
+                            </Menubar.Item>
+                          );
+                        }
+                      })}
                     </div>
                   </Menubar.SubContent>
                 </Menubar.Portal>
@@ -227,7 +240,7 @@ function MenubarOption({ songid }) {
                   className={`outline-none flex sm:hidden items-center px-3 py-2 rounded-md hover:bg-gray-700 cursor-default`}
                 >
                   <button
-                    onClick={'handleOpen'}
+                    onClick={"handleOpen"}
                     className="outline-none flex items-center w-full cursor-default"
                   >
                     Add to a folder
@@ -248,7 +261,7 @@ function MenubarOption({ songid }) {
                 <Menubar.Portal>
                   <Menubar.SubContent
                     className="hidden sm:block z-10 bg-gray-800 text-slate-50 min-w-[220px] rounded-md p-1 drop-shadow-lg"
-                    alignOffset={-1}
+                    alignOffset={5}
                     sideOffset={0}
                   >
                     <Menubar.Item
@@ -261,20 +274,58 @@ function MenubarOption({ songid }) {
                         placeholder="Find a folder"
                       />
                     </Menubar.Item>
+                    {/* TODO! create a folder */}
                     <Menubar.Item
-                      onClick={createPlaylist}
+                      onClick={"createPlaylist"}
                       className="outline-none px-3 py-2 my-1 rounded-md hover:bg-gray-700 cursor-default"
                     >
                       Create New Folder
                     </Menubar.Item>
                     <div className="max-h-[400px] overflow-y-scroll scrollbar-none">
-                    {isLoading
-                      ? loadingloop.map((data, index) => {
-                          return <SmallAddtoPlayListbuttonLoading key={index} />;
-                        })
-                      : ""}
-                    {/* folder */}
-                    
+                      {isLoading
+                        ? loadingloop.map((data, index) => {
+                            return (
+                              <SmallAddtoPlayListbuttonLoading key={index} />
+                            );
+                          })
+                        : ""}
+                      {/* folder */}
+                      {playListFolders.map((playListFolder, index) => {
+                        
+                        return (
+                          <Menubar.Sub key={index}>
+                            <Menubar.SubTrigger className="outline-none hidden sm:flex items-center px-3 py-2 rounded-md hover:bg-gray-700 cursor-default">
+                              {playListFolder.folderName}
+                              <div className="ml-auto pl-5 text-mauve9 group-data-[highlighted]:text-white group-data-[disabled]:text-mauve8">
+                                <ChevronRightIcon />
+                              </div>
+                            </Menubar.SubTrigger>
+                            <Menubar.Portal>
+                              <Menubar.SubContent
+                                className="hidden sm:block z-20 bg-gray-800 text-slate-50 min-w-[180px] rounded-md p-1 drop-shadow-lg"
+                                alignOffset={5}
+                                sideOffset={0}
+                                
+                              >
+                                {
+                                  playListFolder.playLists.map((playlist, index) => {
+                                    // we don't need the current playlist folder we are at. !TODO
+                                    // TODO, add to playlist folder onClick event
+                                    return (
+                                    <Menubar.Item
+                                    className="outline-none px-3 py-2 my-1 rounded-md hover:bg-gray-700 cursor-default"
+                                    key={index}
+                                    >
+                                      {playlist.playListName}
+                                    </Menubar.Item>
+                                    )
+                                  })
+                                }
+                              </Menubar.SubContent>
+                            </Menubar.Portal>
+                          </Menubar.Sub>
+                        );
+                      })}
                     </div>
                   </Menubar.SubContent>
                 </Menubar.Portal>
