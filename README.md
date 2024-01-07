@@ -9,8 +9,8 @@ this is an online music/audio streaming service platform
 - renaming your playlist
 - deleting a playlist
 - user registration to Activate more features
-### Features under development
 - creating a folder
 - adding playlist to a folder
 - deleting a folder
+### Features under development
 - sharing the playlist
