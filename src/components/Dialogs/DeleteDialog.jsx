@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 const Delete = Object.freeze({
   playlist: 1,
   playlistFolder: 2,
+  playlistInsideFolder: 3
 });
 
 function DeleteDialog({ title, id, name, open, handleClose, DeleteFlag }) { // using deleteflag for specific delete signal
@@ -51,6 +52,7 @@ function DeleteDialog({ title, id, name, open, handleClose, DeleteFlag }) { // u
       }
       return
     }
+    if(Delete.playlistInsideFolder === DeleteFlag) {}
   }
   return (
     <>

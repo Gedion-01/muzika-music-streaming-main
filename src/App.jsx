@@ -4,6 +4,7 @@ import Homepage from "./pages/Homepage"
 import Searchpage from "./pages/Searchpage"
 import Generepage from "./pages/Generepage"
 import PlayListpage from "./pages/PlayListpage"
+import PlayListFolderpage from "./pages/PlayListFolderpage"
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
           <Route path='genere/:id' element={<Generepage />} />
           <Route path='/playlist/:id' element={<PlayListpage />} />
           {/* to do */}
-          <Route path='/folder/:folderid/:playlistid' element={'playlist folder page'}/>
+          <Route path='/folder/:folderid/:playlistid' element={<PlayListFolderpage />}/>
         </Route>
       </Routes>
     </>

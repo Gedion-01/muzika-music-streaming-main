@@ -10,6 +10,7 @@ import { put } from "../../HttpService/http_service";
 const Rename = Object.freeze({
   playlist: 1,
   playlistFolder: 2,
+  playlistInsideFolder: 3
 });
 
 function RenameDialog({ open, handleClose, id, name, RenameFlag, Title }) {

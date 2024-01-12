@@ -7,6 +7,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { post } from "../HttpService/http_service";
 import { useUserLoginData } from "../hooks/useUserLoginData";
 import { FiMenu } from "react-icons/fi";
+import { GoSignOut } from "react-icons/go";
+import { AiOutlineSetting } from "react-icons/ai";
 import MobileSideNav from "./MobileSideNav";
 //10px8px2px6px6px16px{
 function Navbar() {
@@ -127,10 +129,13 @@ function Navbar() {
                     sideOffset={5}
                     collisionPadding={5}
                   >
-                    <DropdownMenu.Item onClick={() => logout()} className="outline-none px-3 py-1 rounded-md hover:bg-gray-800 cursor-default">
+                    <DropdownMenu.Item onClick={() => logout()} className="outline-none px-3 py-1 rounded-md hover:bg-gray-800 cursor-default flex items-center">
+                      <GoSignOut className="w-4 h-4 mr-2"/>
                       Sign out
                     </DropdownMenu.Item>
-                    <DropdownMenu.Item className="outline-none px-3 py-1 rounded-md hover:bg-gray-800 cursor-default">
+                    <DropdownMenu.Item className="outline-none px-3 py-1 rounded-md hover:bg-gray-800 cursor-default flex items-center">
+                      <AiOutlineSetting className="w-4 h-4 mr-2"/>
+
                       Setting
                     </DropdownMenu.Item>
                     <DropdownMenu.Arrow className="fill-gray-900" />

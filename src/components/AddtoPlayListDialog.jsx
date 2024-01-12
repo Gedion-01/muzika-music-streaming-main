@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-
+import { AiOutlinePlus } from "react-icons/ai";
 // user need to sign in dialogue
 import SignInDialog from "./Dialogs/SignInDialog";
 
@@ -67,8 +67,9 @@ function AddtoPlayListDialog({
             <div id="holder" className="px-3">
               <button
                 onClick={createPlaylist}
-                className="outline-none w-full text-start px-3 py-2 rounded-md hover:bg-gray-700 cursor-default"
+                className="outline-none w-full text-start px-3 py-2 rounded-md hover:bg-gray-700 cursor-default flex items-center"
               >
+                <AiOutlinePlus id="plus-button" className="w-5 h-5 mr-2" />
                 Create New Playlist
               </button>
               {/* playLists */}
