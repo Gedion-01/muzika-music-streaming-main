@@ -34,18 +34,21 @@ for (let i = 0; i < 3; i++) {
   loadingloop[i] = i;
 }
 
+// never uncomment the comments
+
 function MenubarOption({ songid }) {
   const { loginWithRedirect, logout, user, isLoading } = useAuth0();
   const location = useLocation();
   // the playlist id from the dynamic router parameter
   const { id, folderid, playlistid } = useParams();
 
-  const { userId, isSignedIn, setRefreshCount } = useUserLoginData();
-  const [open, setOpen] = useState(false);
+  // const { userId, isSignedIn, setRefreshCount } = useUserLoginData();
+  const { userId, isSignedIn, setRefreshCount, openToast, setOpenToast, setToastMessage } = useUserLoginData();
+  //const [open, setOpen] = useState(false);
   //for opening playlists for small screen
   const [openPlayList, setOpenPlayList] = useState(false);
   console.log(openPlayList);
-  const [toastmessage, setToastmessage] = useState("");
+  //const [toastmessage, setToastmessage] = useState("");
 
   // to get the playList of the user
   const { playLists, playListLength, setReload } = useGetPlayListsofUser(
@@ -79,11 +82,11 @@ function MenubarOption({ songid }) {
       const res = await put("/add-to-playlist", data);
       console.log(res);
       if (res.message === messageStatus.EXISTS) {
-        setOpen(true);
-        setToastmessage(`This is already in your '${playlistname}' playlist`);
+        setToastMessage(`This is already in your '${playlistname}' playlist`);
+        setOpenToast(true);
       } else if (res.message === messageStatus.ADDED) {
-        setOpen(true);
-        setToastmessage(`Added to '${playlistname}'`);
+        setToastMessage(`Added to '${playlistname}'`);
+        setOpenToast(true);
         handlePlaylistClose();
       }
     } catch (error) {
@@ -107,11 +110,11 @@ function MenubarOption({ songid }) {
       const res = await put("/addsongtofolder", data);
       console.log(res);
       if (res.message === messageplayListFolderStatus.EXISTS) {
-        setOpen(true);
-        setToastmessage(`This is already in your '${playlistname}' playlist`);
+        setToastMessage(`This is already in your '${playlistname}' playlist`);
+        setOpenToast(true);
       } else if (res.message === messageplayListFolderStatus.ADDED) {
-        setOpen(true);
-        setToastmessage(`Added to '${playlistname}'`);
+        setToastMessage(`Added to '${playlistname}'`);
+        setOpenToast(true);
         handlePlaylistClose();
       }
     } catch (error) {
@@ -126,8 +129,8 @@ function MenubarOption({ songid }) {
     };
     try {
       const res = await put("/remove-from-playlist", data);
-      setToastmessage(`Song removed from the playlist`);
-      setOpen(true);
+      setToastMessage(`Song removed from the playlist`);
+      setOpenToast(true);
       setRefreshCount(); // using it for refreshing the playlist data
     } catch (error) {
       console.log("failed to remove from playlist");
@@ -142,11 +145,11 @@ function MenubarOption({ songid }) {
     };
     try {
       const res = await put("/removefromplaylistfolder", data);
-      setToastmessage(`Song removed from the playlist folder`);
-      setOpen(true);
+      setToastMessage(`Song removed from the playlist`);
+      setOpenToast(true);
       setRefreshCount(); // using it for refreshing the playlist data
     } catch (error) {
-      console.log("failed to remove from playlist folder");
+      console.log("failed to remove from playlist");
     }
   }
   // --- to open dialog that the user need to sign in
@@ -171,6 +174,8 @@ function MenubarOption({ songid }) {
       };
       const res = await post("/createplaylist", data);
       console.log(res);
+      setToastMessage(res.message)
+      setOpenToast(true)
       setRefreshCount(); // using it for refreshing the playlist data
     }
   }
@@ -187,6 +192,8 @@ function MenubarOption({ songid }) {
         name: `My Playlist #${length}`,
       };
       const res = await put("/createplaylistinsidefolder", data);
+      setToastMessage(res.message)
+      setOpenToast(true)
       console.log(res);
       setRefreshCount(); // using it for refreshing the playlist & folder data
     }
@@ -208,7 +215,7 @@ function MenubarOption({ songid }) {
         addToPlayList={addToPlayList}
       />
 
-      <AddToast open={open} setOpen={setOpen} name={toastmessage} />
+      {/* <AddToast open={open} setOpen={setOpen} name={toastmessage} /> */}
       <Menubar.Root className="flex">
         <Menubar.Menu>
           <Menubar.Trigger className="outline-none">
@@ -388,7 +395,7 @@ function MenubarOption({ songid }) {
                                     id="plus-button"
                                     className="w-5 h-5 mr-2"
                                   />
-                                  Create New Playlist #
+                                  Create New Playlist
                                 </Menubar.Item>
                                 {playListFolder.playLists.map(
                                   (playlist, index) => {

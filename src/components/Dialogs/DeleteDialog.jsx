@@ -12,11 +12,11 @@ const Delete = Object.freeze({
   playlistInsideFolder: 3
 });
 
-function DeleteDialog({ title, id, name, open, handleClose, DeleteFlag }) { // using deleteflag for specific delete signal
+function DeleteDialog({ title, id, playlistid, name, open, handleClose, DeleteFlag }) { // using deleteflag for specific delete signal
   const navigate = useNavigate();
-  const { userId, setRefreshCount } = useUserLoginData();
-  const [openToast, setOpenToast] = useState(false);
-  const [toastmessage, setToastmessage] = useState("");
+  const { userId, setRefreshCount, openToast, setOpenToast, setToastMessage } = useUserLoginData();
+  // const [openToast, setOpenToast] = useState(true);
+  //const [toastmessage, setToastmessage] = useState("");
   async function remove(e) {
     if (Delete.playlist === DeleteFlag) {
       const data = {
@@ -26,12 +26,14 @@ function DeleteDialog({ title, id, name, open, handleClose, DeleteFlag }) { // u
 
       try {
         const result = await put("/remove-playlist", data);
+        setToastMessage(result.message)
+        setOpenToast(true)
         handleClose(e);
-        setRefreshCount();
         navigate("/");
+        setRefreshCount();
       } catch (error) {
         setOpenToast(true);
-        setToastmessage("An error occured while trying to remove the playlist");
+        setToastMessage("An error occured while trying to remove the playlist");
       }
       return
     }
@@ -42,21 +44,42 @@ function DeleteDialog({ title, id, name, open, handleClose, DeleteFlag }) { // u
       }
       try {
         const result = await put("/removefolder", data)
+        setToastMessage(result.message)
+        setOpenToast(true)
         handleClose(e)
         setRefreshCount()
         navigate("/")
 
       } catch (error) {
         setOpenToast(true)
-        setToastmessage("An error occured while trying to remove the folder")
+        setToastMessage("An error occured while trying to remove the folder")
       }
       return
     }
-    if(Delete.playlistInsideFolder === DeleteFlag) {}
+    if(Delete.playlistInsideFolder === DeleteFlag) {
+      const data = {
+        userid: userId,
+        folderid: id,
+        playlistid: playlistid
+      }
+      try {
+        const result = await put("/removeplaylistinsidefolder", data)
+        setToastMessage(result.message)
+        setOpenToast(true)
+        handleClose(e)
+        setRefreshCount()
+        navigate("/")
+
+      } catch (error) {
+        setOpenToast(true)
+        setToastMessage("An error occured while trying to remove the playlist inside a folder")
+      }
+      return
+    }
   }
   return (
     <>
-      <AddToast open={openToast} setOpen={setOpenToast} name={toastmessage} />
+      {/* <AddToast name={toastmessage} open={openToast} setOpen={setOpenToast}/> */}
 
       <section
         onClick={(e) => handleClose(e)}
@@ -77,14 +100,14 @@ function DeleteDialog({ title, id, name, open, handleClose, DeleteFlag }) { // u
 
         <p className="px-6 text-left text-sm font-normal">
           {
-            DeleteFlag === 1 ?
+            DeleteFlag === 2 ?
+            (
+              <h1 className=" font-thin">This will delete <span className="font-semibold">{name}</span> and all playlists inside?</h1>
+            ) :
             (
               <h1 className=" font-thin">This will delete <span className="font-semibold">{name}</span> from
               your <span className="font-semibold">Library.</span></h1>
             )
-          : (
-            <h1 className=" font-thin">This will delete <span className="font-semibold">{name}</span> and all playlists inside?</h1>
-          )
           }
           
         </p>

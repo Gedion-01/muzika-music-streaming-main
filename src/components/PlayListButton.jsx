@@ -9,6 +9,7 @@ import RenameDialog from "./Dialogs/RenameDialog";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { HiShare } from "react-icons/hi2";
 import { FiTrash } from "react-icons/fi";
+import { AiOutlinePlus } from "react-icons/ai";
 
 function PlayListButton({ id, name, username, close }) {
   const [open, setOpen] = useState(false);
@@ -91,10 +92,17 @@ function PlayListButton({ id, name, username, close }) {
                     className="flex items-center outline-none mb-1"
                   >
                     <input
-                      className="rounded-md px-3 py-2 bg-gray-700 focus:outline-none"
+                      className="rounded-md px-3 py-2 bg-gray-700 focus:outline-none w-full"
                       type="search"
-                      placeholder="Find a folder"
+                      placeholder="Find a playlist"
                     />
+                  </ContextMenu.Item>
+                  <ContextMenu.Item
+                    onClick={"createPlaylist"}
+                    className="outline-none px-3 py-2 rounded-md hover:bg-gray-700 cursor-default flex items-center"
+                  >
+                    <AiOutlinePlus id="plus-button" className="w-5 h-5 mr-2" />
+                    Create New Playlist
                   </ContextMenu.Item>
                 </ContextMenu.SubContent>
               </ContextMenu.Portal>

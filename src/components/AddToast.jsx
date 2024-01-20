@@ -1,18 +1,19 @@
 import * as React from 'react';
 import * as Toast from '@radix-ui/react-toast';
 import { AiOutlineClose } from 'react-icons/ai';
+import { useUserLoginData } from '../hooks/useUserLoginData';
 const AddToast = ({open, setOpen, name}) => {
-
+  const {openToast, setOpenToast, toastMessage} = useUserLoginData()
   return (
-    <div className='z-30'>
+    <div className=''>
     <Toast.Provider swipeDirection="right">
       <Toast.Root
-        className="z-20 flex flex-row justify-between w-full bg-cyan-500 text-slate-50 rounded-md  p-[10px]  data-[state=open]:animate-slideIn data-[state=closed]:animate-hide data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=cancel]:translate-x-0 data-[swipe=cancel]:transition-[transform_200ms_ease-out] data-[swipe=end]:animate-swipeOut"
-        open={open}
-        onOpenChange={setOpen}
+        className="z-20  flex flex-row justify-between w-full bg-cyan-500 text-slate-50 rounded-md  p-[10px]  data-[state=open]:animate-slideIn data-[state=closed]:animate-hide data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=cancel]:translate-x-0 data-[swipe=cancel]:transition-[transform_200ms_ease-out] data-[swipe=end]:animate-swipeOut"
+        open={openToast}
+        onOpenChange={setOpenToast}
       >
         <Toast.Title className="text-sm font-normal">
-          {name}
+          {toastMessage}
         </Toast.Title>
         <Toast.Description className=''>
           

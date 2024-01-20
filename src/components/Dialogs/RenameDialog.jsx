@@ -13,10 +13,11 @@ const Rename = Object.freeze({
   playlistInsideFolder: 3
 });
 
-function RenameDialog({ open, handleClose, id, name, RenameFlag, Title }) {
-  const { userId, setRefreshCount } = useUserLoginData();
+function RenameDialog({ open, handleClose, id, playlistid, name, RenameFlag, Title }) {
+
+  const { userId, setRefreshCount, openToast, setOpenToast, setToastMessage } = useUserLoginData();
   const [inputValue, setInputValue] = useState("");
-  const [openToast, setOpenToast] = useState(false);
+  // const [openToast, setOpenToast] = useState(false);
   const [toastmessage, setToastmessage] = useState("");
 
   const inputRef = useRef(null);
@@ -44,14 +45,14 @@ function RenameDialog({ open, handleClose, id, name, RenameFlag, Title }) {
 
       try {
         const result = await put("/rename-playlist", data);
-        setToastmessage(result.message);
+        setToastMessage(result.message);
         setOpenToast(true);
         //setTimeout(setRefreshCount, 200)
         handleClose(e);
         setRefreshCount();
       } catch (error) {
         setOpenToast(true);
-        setToastmessage("failed to rename the playlist");
+        setToastMessage("failed to rename the playlist");
         console.log(error);
       }
       return
@@ -65,14 +66,36 @@ function RenameDialog({ open, handleClose, id, name, RenameFlag, Title }) {
       console.log(data);
       try {
         const result = await put("/rename-folder", data);
-        setToastmessage(result.message);
+        setToastMessage(result.message);
         setOpenToast(true);
         //setTimeout(setRefreshCount, 200)
         handleClose(e);
         setRefreshCount();
       } catch (error) {
         setOpenToast(true);
-        setToastmessage("failed to rename the playlist folder");
+        setToastMessage("failed to rename the playlist folder");
+        console.log(error);
+      }
+      return
+    }
+    if(Rename.playlistInsideFolder === RenameFlag) {
+      const data = {
+        userid: userId,
+        folderid: id,
+        playlistid: playlistid,
+        name: inputValue,
+      };
+      console.log(data);
+      try {
+        const result = await put("/renameplaylistinsidefolder", data);
+        setToastMessage(result.message);
+        setOpenToast(true);
+        //setTimeout(setRefreshCount, 200)
+        handleClose(e);
+        setRefreshCount();
+      } catch (error) {
+        setOpenToast(true);
+        setToastMessage("failed to rename the playlist inside a folder");
         console.log(error);
       }
       return
@@ -80,7 +103,7 @@ function RenameDialog({ open, handleClose, id, name, RenameFlag, Title }) {
   }
   return (
     <>
-      <AddToast open={openToast} setOpen={setOpenToast} name={toastmessage} />
+      {/* <AddToast open={openToast} setOpen={setOpenToast} name={toastmessage} /> */}
       <section
         onClick={(e) => handleClose(e)}
         className={`${

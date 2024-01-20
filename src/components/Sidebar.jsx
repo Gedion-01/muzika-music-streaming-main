@@ -29,6 +29,7 @@ import { useGetPlayListFolderofUser } from "../hooks/useGetPlayListFolderofUser"
 const playListName = "My Playlist #";
 const folderName = "New Folder"
 function Sidebar() {
+  const { userId, isSignedIn, setRefreshCount, openToast, setOpenToast, setToastMessage } = useUserLoginData();
   // --- to open dialog that the user need to sign in
   const [open, setOpen] = useState(false);
   const [toastmessage, setToastmessage] = useState("");
@@ -44,7 +45,7 @@ function Sidebar() {
 
   const { loginWithRedirect, logout, user, isLoading } = useAuth0();
   const location = useLocation();
-  const { userId, isSignedIn } = useUserLoginData();
+  // const { userId, isSignedIn } = useUserLoginData();
   // to get the playList of the user
   const { playLists, playListLength, setPlayListLength, setReload } =
     useGetPlayListsofUser(userId, isSignedIn);
@@ -68,10 +69,10 @@ function Sidebar() {
         name: `${playListName}${playListLength}`,
       };
       const res = await post("/createplaylist", data);
-      setToastmessage("Playlist created");
-      setToastOpen(true);
+      setToastMessage("Playlist created");
+      setOpenToast(true);
       console.log(res);
-      setReload((prev) => prev + 1);
+      setRefreshCount()
     }
   }
   async function createPlayListFolder() {
@@ -85,9 +86,9 @@ function Sidebar() {
         name: `${folderName}`
       }
       const res = await post("/createfolder", data)
-      setToastmessage("Folder created")
-      setToastOpen(true)
-      setReloadFolder(prev => prev + 1)
+      setToastMessage("Folder created")
+      setOpenToast(true)
+      setRefreshCount()
     }
   }
 
