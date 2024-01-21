@@ -10,8 +10,30 @@ import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { HiShare } from "react-icons/hi2";
 import { FiTrash } from "react-icons/fi";
 import { AiOutlinePlus } from "react-icons/ai";
+import { useUserLoginData } from "../hooks/useUserLoginData";
+import { useGetPlayListFolderofUser } from "../hooks/useGetPlayListFolderofUser";
+import { useCreationUserData } from "../hooks/useCreationUserData";
+import { put } from "../HttpService/http_service";
+import { useNavigate } from "react-router-dom";
+
 
 function PlayListButton({ id, name, username, close }) {
+  const navigate = useNavigate();
+  const { createPlayListFolder } = useCreationUserData();
+  const {
+    userId,
+    isSignedIn,
+    setRefreshCount,
+    openToast,
+    setOpenToast,
+    setToastMessage,
+  } = useUserLoginData();
+  const {
+    playListFolders,
+    playListFoldersLength,
+    setPlayListFoldersLength,
+    setReloadFolder,
+  } = useGetPlayListFolderofUser(userId, isSignedIn);
   const [open, setOpen] = useState(false);
   const [openRenameDialog, setOpenRenameDialog] = useState(false);
   const handleOpen = (e) => {
@@ -34,6 +56,23 @@ function PlayListButton({ id, name, username, close }) {
   };
   const location = useLocation();
 
+  async function movePlaylistToFolder(folderid, foldername) {
+    const data = {
+      userid: userId,
+      folderid: folderid,
+      playlistid: id, // we get the playlist id by default from the root component
+    };
+    try {
+      const res = await put("/addplaylisttofolder", data);
+      setToastMessage(`playlist moved to '${foldername}' folder successfully`);
+      setOpenToast(true);
+      navigate("/");
+      setRefreshCount();
+    } catch (error) {
+      console.log("failed to add to the playlist");
+      console.log(error);
+    }
+  }
   return (
     <>
       <DeleteDialog
@@ -70,7 +109,7 @@ function PlayListButton({ id, name, username, close }) {
         </Link>
         <ContextMenu.Portal>
           <ContextMenu.Content
-            className={`z-20 bg-gray-800 text-slate-50 min-w-[220px] rounded-md p-1`}
+            className={`bg-gray-800 text-slate-50 min-w-[220px] rounded-md p-1`}
             sideOffset={5}
             align="end"
           >
@@ -83,7 +122,7 @@ function PlayListButton({ id, name, username, close }) {
               </ContextMenu.SubTrigger>
               <ContextMenu.Portal>
                 <ContextMenu.SubContent
-                  className="bg-gray-800 text-slate-50 min-w-[220px] rounded-md p-1"
+                  className="z-20 bg-gray-800 text-slate-50 min-w-[220px] rounded-md p-1"
                   alignOffset={-1}
                   sideOffset={0}
                 >
@@ -98,12 +137,28 @@ function PlayListButton({ id, name, username, close }) {
                     />
                   </ContextMenu.Item>
                   <ContextMenu.Item
-                    onClick={"createPlaylist"}
+                    onClick={createPlayListFolder}
                     className="outline-none px-3 py-2 rounded-md hover:bg-gray-700 cursor-default flex items-center"
                   >
                     <AiOutlinePlus id="plus-button" className="w-5 h-5 mr-2" />
-                    Create New Playlist
+                    Create folder
                   </ContextMenu.Item>
+                  {playListFolders.map((playListFolder, index) => {
+                    return (
+                      <ContextMenu.Item
+                        key={index}
+                        onClick={() =>
+                          movePlaylistToFolder(
+                            playListFolder._id,
+                            playListFolder.folderName
+                          )
+                        }
+                        className="outline-none px-3 py-2 rounded-md hover:bg-gray-700 cursor-default flex items-center"
+                      >
+                        {playListFolder.folderName}
+                      </ContextMenu.Item>
+                    );
+                  })}
                 </ContextMenu.SubContent>
               </ContextMenu.Portal>
             </ContextMenu.Sub>

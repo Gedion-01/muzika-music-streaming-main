@@ -18,6 +18,7 @@ import SignInDialog from "./Dialogs/SignInDialog";
 import SmallAddtoPlayListbuttonLoading from "./animations/SmallAddtoPlayListbuttonLoading";
 
 import { useAuth0 } from "@auth0/auth0-react";
+import { useCreationUserData } from "../hooks/useCreationUserData";
 
 const playListName = "My Playlist #";
 const messageStatus = {
@@ -37,13 +38,21 @@ for (let i = 0; i < 3; i++) {
 // never uncomment the comments
 
 function MenubarOption({ songid }) {
+  const {createPlaylist, createPlayListFolder, createPlaylistInsideFolder} = useCreationUserData()
   const { loginWithRedirect, logout, user, isLoading } = useAuth0();
   const location = useLocation();
   // the playlist id from the dynamic router parameter
   const { id, folderid, playlistid } = useParams();
 
   // const { userId, isSignedIn, setRefreshCount } = useUserLoginData();
-  const { userId, isSignedIn, setRefreshCount, openToast, setOpenToast, setToastMessage } = useUserLoginData();
+  const {
+    userId,
+    isSignedIn,
+    setRefreshCount,
+    openToast,
+    setOpenToast,
+    setToastMessage,
+  } = useUserLoginData();
   //const [open, setOpen] = useState(false);
   //for opening playlists for small screen
   const [openPlayList, setOpenPlayList] = useState(false);
@@ -161,43 +170,43 @@ function MenubarOption({ songid }) {
     setDialogOpen(false);
   };
   // --- end
-  async function createPlaylist() {
-    if (!user) {
-      handleDialogOpen();
-      console.log("no user account");
-    }
-    //const {data, isLoading()}
-    if (userId && isSignedIn) {
-      const data = {
-        userid: userId,
-        name: `${playListName}${playListLength}`,
-      };
-      const res = await post("/createplaylist", data);
-      console.log(res);
-      setToastMessage(res.message)
-      setOpenToast(true)
-      setRefreshCount(); // using it for refreshing the playlist data
-    }
-  }
-  async function createPlaylistInsideFolder(folderid, length) {
-    if (!user) {
-      handleDialogOpen();
-      console.log("no user account");
-    }
-    //
-    if (userId && isSignedIn) {
-      const data = {
-        userid: userId,
-        folderid: folderid,
-        name: `My Playlist #${length}`,
-      };
-      const res = await put("/createplaylistinsidefolder", data);
-      setToastMessage(res.message)
-      setOpenToast(true)
-      console.log(res);
-      setRefreshCount(); // using it for refreshing the playlist & folder data
-    }
-  }
+  // async function createPlaylist() {
+  //   if (!user) {
+  //     handleDialogOpen();
+  //     console.log("no user account");
+  //   }
+  //   //const {data, isLoading()}
+  //   if (userId && isSignedIn) {
+  //     const data = {
+  //       userid: userId,
+  //       name: `${playListName}${playListLength}`,
+  //     };
+  //     const res = await post("/createplaylist", data);
+  //     console.log(res);
+  //     setToastMessage(res.message);
+  //     setOpenToast(true);
+  //     setRefreshCount(); // using it for refreshing the playlist data
+  //   }
+  // }
+  // async function createPlaylistInsideFolder(folderid, length) {
+  //   if (!user) {
+  //     handleDialogOpen();
+  //     console.log("no user account");
+  //   }
+  //   //
+  //   if (userId && isSignedIn) {
+  //     const data = {
+  //       userid: userId,
+  //       folderid: folderid,
+  //       name: `My Playlist #${length}`,
+  //     };
+  //     const res = await put("/createplaylistinsidefolder", data);
+  //     setToastMessage(res.message);
+  //     setOpenToast(true);
+  //     console.log(res);
+  //     setRefreshCount(); // using it for refreshing the playlist & folder data
+  //   }
+  // }
   return (
     <>
       <SignInDialog
@@ -280,7 +289,7 @@ function MenubarOption({ songid }) {
                         id="plus-button"
                         className="w-5 h-5 mr-2"
                       />
-                      Create New Playlist
+                      Create playlist
                     </Menubar.Item>
                     <div className="max-h-[400px] overflow-y-scroll scrollbar-none">
                       {isLoading
@@ -348,18 +357,18 @@ function MenubarOption({ songid }) {
                       className="flex items-center outline-none mb-1"
                     >
                       <input
-                        className="rounded-md px-3 py-2 bg-gray-700 focus:outline-none"
+                        className="rounded-md px-3 py-2 bg-gray-700 focus:outline-none w-full"
                         type="search"
                         placeholder="Find a folder"
                       />
                     </Menubar.Item>
-                    {/* TODO! create a folder */}
-                    {/* <Menubar.Item
-                      onClick={"createPlaylist"}
-                      className="outline-none px-3 py-2 my-1 rounded-md hover:bg-gray-700 cursor-default"
-                    >
-                      Create New Folder
-                    </Menubar.Item> */}
+                    <Menubar.Item className="outline-none px-3 py-2 my-1 rounded-md hover:bg-gray-700 cursor-default flex items-center" onClick={createPlayListFolder}>
+                      <AiOutlinePlus
+                        id="plus-button"
+                        className="w-5 h-5 mr-2"
+                      />
+                      Create folder
+                    </Menubar.Item>
                     <div className="max-h-[400px] overflow-y-scroll scrollbar-none">
                       {isLoading
                         ? loadingloop.map((data, index) => {
@@ -388,14 +397,17 @@ function MenubarOption({ songid }) {
                                   className="outline-none px-3 py-2 my-1 rounded-md hover:bg-gray-700 cursor-default flex items-center"
                                   key={index}
                                   onClick={() => {
-                                    createPlaylistInsideFolder(playListFolder._id, playListFolder.playLists.length)
+                                    createPlaylistInsideFolder(
+                                      playListFolder._id,
+                                      playListFolder.playLists.length
+                                    );
                                   }}
                                 >
                                   <AiOutlinePlus
                                     id="plus-button"
                                     className="w-5 h-5 mr-2"
                                   />
-                                  Create New Playlist
+                                  Create playlist
                                 </Menubar.Item>
                                 {playListFolder.playLists.map(
                                   (playlist, index) => {
@@ -434,16 +446,18 @@ function MenubarOption({ songid }) {
                 } cursor-default`}
                 onClick={removeFromplaylist}
               >
-                <FiTrash className="w-5 h-5 mr-2"/>
+                <FiTrash className="w-5 h-5 mr-2" />
                 Remove from this playlist
               </Menubar.Item>
               <Menubar.Item
                 className={`outline-none px-3 py-2 rounded-md hover:bg-gray-700 flex items-center ${
-                  location.pathname === `/folder/${folderid}/${playlistid}` ? "block" : "hidden"
+                  location.pathname === `/folder/${folderid}/${playlistid}`
+                    ? "block"
+                    : "hidden"
                 } cursor-default`}
                 onClick={removeFromplaylistFolder}
               >
-                <FiTrash className="w-5 h-5 mr-2"/>
+                <FiTrash className="w-5 h-5 mr-2" />
                 Remove from this playlist
               </Menubar.Item>
               <Menubar.Item className="outline-none px-3 py-2 rounded-md hover:bg-gray-700 cursor-default flex items-center">

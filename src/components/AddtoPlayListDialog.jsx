@@ -19,7 +19,7 @@ function AddtoPlayListDialog({
   openPlayList,
   handlePlayListClose,
   createPlaylist,
-  addToPlayList
+  addToPlayList,
 }) {
   // -- to open dialog that the user need to sign in
   const [open, setOpen] = useState(false);
