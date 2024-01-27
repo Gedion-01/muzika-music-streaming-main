@@ -4,20 +4,25 @@ import { FiMusic } from "react-icons/fi";
 import { Link, useLocation } from "react-router-dom";
 import DeleteDialog from "./Dialogs/DeleteDialog";
 import SignInDialog from "./Dialogs/SignInDialog";
-import { MdOutlineDriveFileRenameOutline } from "react-icons/md";
+import { MdImportExport, MdOutlineDriveFileRenameOutline } from "react-icons/md";
 import RenameDialog from "./Dialogs/RenameDialog";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { HiShare } from "react-icons/hi2";
 import { FiTrash } from "react-icons/fi";
 import { AiOutlinePlus } from "react-icons/ai";
+import { PiMusicNotesPlus } from "react-icons/pi";
+import { FiFolderPlus } from "react-icons/fi";
+
 import { useUserLoginData } from "../hooks/useUserLoginData";
 import { useGetPlayListFolderofUser } from "../hooks/useGetPlayListFolderofUser";
 import { useCreationUserData } from "../hooks/useCreationUserData";
 import { put } from "../HttpService/http_service";
 import { useNavigate } from "react-router-dom";
 
+import { useGetPlayListsofUser } from "../hooks/useGetPlayListsofUser";
 
 function PlayListButton({ id, name, username, close }) {
+  const {createPlaylist} = useCreationUserData()
   const navigate = useNavigate();
   const { createPlayListFolder } = useCreationUserData();
   const {
@@ -34,6 +39,7 @@ function PlayListButton({ id, name, username, close }) {
     setPlayListFoldersLength,
     setReloadFolder,
   } = useGetPlayListFolderofUser(userId, isSignedIn);
+  const {playListLength} = useGetPlayListsofUser(userId)
   const [open, setOpen] = useState(false);
   const [openRenameDialog, setOpenRenameDialog] = useState(false);
   const handleOpen = (e) => {
@@ -177,6 +183,13 @@ function PlayListButton({ id, name, username, close }) {
               <MdOutlineDriveFileRenameOutline className="w-5 h-5 mr-2" />
               Rename
             </ContextMenu.Item>
+            <ContextMenu.Separator className="h-[1px] my-[2px] mx-[1px] bg-gray-700" />
+            <ContextMenu.Item onClick={() => {
+              createPlaylist(playListLength)
+            }} className="outline-none px-3 py-2 rounded-md hover:bg-gray-700 cursor-default flex items-center">
+                    <PiMusicNotesPlus className="w-5 h-5 mr-2"/>
+                    Create playlist
+                  </ContextMenu.Item>
             <ContextMenu.Item className="outline-none px-3 py-2 rounded-md hover:bg-gray-700 cursor-default flex items-center">
               <HiShare className="w-5 h-5 mr-2" />
               Share
