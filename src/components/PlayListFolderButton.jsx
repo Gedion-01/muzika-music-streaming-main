@@ -271,6 +271,13 @@ function PlayListFolderButton({ id, name, username, close, playlists }) {
                                 />
                                 Create folder
                               </ContextMenu.Item>
+                              <ContextMenu.Item
+                                onClick={createPlayListFolder}
+                                className="outline-none px-3 py-2 rounded-md hover:bg-gray-700 cursor-default flex items-center"
+                              >
+                                Remove from folder
+                              </ContextMenu.Item>
+                              <ContextMenu.Separator className="h-[1px] mx-[1px] bg-gray-700" />
                               {playListFolders.map((playListFolder, index) => {
                                 if(playListFolder.folderName === name) {
                                   return
