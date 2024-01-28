@@ -5,6 +5,7 @@ this is an online music/audio streaming and listening platform
 - search music by genere
 - sign in to Activate more features
 - creating custom playlist
+- creating Folder
 - adding songs to custom playlist
 - removing songs from playlist
 - renaming your playlist
