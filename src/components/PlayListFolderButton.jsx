@@ -106,6 +106,23 @@ function PlayListFolderButton({ id, name, username, close, playlists }) {
       console.log(error);
     }
   }
+  async function moveFromFolderToPlaylist(currentPlaylistID) {
+    const data = {
+      userid: userId,
+      currentfolderid: id,
+      currentplaylistid: currentPlaylistID
+    }
+    try {
+      const res = await put("/moveplaylistfromfoldertoplaylist", data);
+      setToastMessage(res.message);
+      setRefreshCount();
+      setOpenToast(true);
+      navigate("/");
+    } catch (error) {
+      console.log("Failed to move the playlist from folder back to playlist");
+      console.log(error);
+    }
+  }
   return (
     <>
       <DeleteDialog
@@ -272,7 +289,7 @@ function PlayListFolderButton({ id, name, username, close, playlists }) {
                                 Create folder
                               </ContextMenu.Item>
                               <ContextMenu.Item
-                                onClick={createPlayListFolder}
+                                onClick={() => moveFromFolderToPlaylist(playlist._id)}
                                 className="outline-none px-3 py-2 rounded-md hover:bg-gray-700 cursor-default flex items-center"
                               >
                                 Remove from folder
